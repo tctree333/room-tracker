@@ -1,0 +1,30 @@
+name: Commit data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '59 * * * *' # every hour at XX:59
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: pip install -r archive/requirements.txt
+
+      - name: Fetch latest data
+        run: python archive/main.py
+        env:
+          SPREADSHEET_URL: ${{ secrets.SPREADSHEET_URL }}
+
+      - name: Commit data
+        run: |-
+          if [[ `git status --porcelain` ]]; then
+            git config user.name github-actions
+            git config user.email github-actions@github.com
+            git add -A
+            git commit -m "[skip ci] add latest data"
+            git push
+          fi

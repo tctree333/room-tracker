@@ -15,11 +15,13 @@ export const GET: RequestHandler = async () => {
 					deviceNameMap.set(device.id, device.name);
 				});
 
-				particle.getEventStream({ name: 'data', auth: authToken, product }).then((stream) => {
+				particle.getEventStream({ name: 'roomData', auth: authToken, product }).then((stream) => {
 					stream.on('event', (data) => {
 						const device = deviceNameMap.get(data.coreid) || data.coreid;
-						const value = data.data;
-						const msg = new TextEncoder().encode(`data: ${JSON.stringify({ device, value })}\n\n`);
+						const payload = JSON.parse(data.data);
+						const msg = new TextEncoder().encode(
+							`data: ${JSON.stringify({ device, value: payload })}\n\n`
+						);
 						controller.enqueue(msg);
 					});
 				});

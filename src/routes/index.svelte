@@ -1,9 +1,12 @@
 <script lang="ts">
+	import '$lib/global.css';
+
 	import { browser } from '$app/env';
+	import type { DataEndpointPayload, RoomDataPayload } from 'src/lib/types';
 
-	let messages: { device: string; value: string }[] = [];
-
-	let value = 0;
+	let messages: DataEndpointPayload[] = [];
+	let currentState: RoomDataPayload;
+	let lastUpdated = '';
 
 	if (browser) {
 		const sse = new EventSource('/data');
@@ -14,8 +17,9 @@
 
 		sse.addEventListener('message', (event) => {
 			console.log({ event });
-			const data = JSON.parse(event.data);
-			value = parseInt(data.value);
+			lastUpdated = new Date().toLocaleString();
+			const data: DataEndpointPayload = JSON.parse(event.data);
+			currentState = data.value;
 			messages.unshift(data);
 			messages = messages;
 		});
@@ -24,18 +28,5 @@
 
 <h1>Wow!</h1>
 
-<progress {value} max="4095" />
-
-<button
-	on:click={() => {
-		messages = [];
-	}}>Clear</button
->
-
-<p>{value}</p>
-
-<!-- <ul>
-	{#each messages as msg}
-		<li>{msg.device}: {msg.value}</li>
-	{/each}
-</ul> -->
+<p>Last updated at {lastUpdated}.</p>
+<pre>{JSON.stringify(currentState, undefined, 2)}</pre>

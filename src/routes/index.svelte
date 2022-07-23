@@ -1,3 +1,26 @@
+<script context="module" lang="ts">
+	import type { Load } from '@sveltejs/kit';
+	export const load: Load = async ({ fetch }) => {
+		const url =
+			'https://raw.githubusercontent.com/tctree333/room-tracker/main/archive/data/rolling.json';
+		const response = await fetch(url);
+		if (!response.ok) {
+			return { status: response.status };
+		}
+		const lastData = (await response.json()).slice(-1)[0];
+		const lastUpdated = new Date(lastData.timestamp).toLocaleString();
+		delete lastData.timestamp;
+
+		return {
+			status: 200,
+			props: {
+				currentState: lastData,
+				lastUpdated
+			}
+		};
+	};
+</script>
+
 <script lang="ts">
 	import '$lib/global.css';
 
@@ -6,17 +29,8 @@
 	import type { DataEndpointPayload, RoomDataPayload } from '$lib/types';
 
 	let messages: DataEndpointPayload[] = [];
-	let currentState: RoomDataPayload = {
-		PM1: 0,
-		'PM2.5': 0,
-		PM4: 0,
-		PM10: 0,
-		HUM1: 0,
-		TMP1: 0,
-		VOC: 0,
-		NOX: 0
-	};
-	let lastUpdated = 'never';
+	export let currentState: RoomDataPayload;
+	export let lastUpdated = 'never';
 
 	if (browser) {
 		const sse = new EventSource('/data');

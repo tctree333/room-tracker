@@ -151,10 +151,12 @@
 	}
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr));
 		grid-gap: 16px;
+		padding: 0 16px;
 	}
 	section {
-		padding: 16px;
+		max-width: 1440px;
+		margin: 0 auto;
 	}
 </style>

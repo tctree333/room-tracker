@@ -11,7 +11,7 @@
 	function findRange(value: number): [string, string] {
 		for (const [label, [min, max, color]] of Object.entries(ranges)) {
 			if (value >= min && value <= max) {
-				return [label, color];
+				return [label, color || '#22C55E'];
 			}
 		}
 		return ['', '#22C55E'];
@@ -19,9 +19,9 @@
 </script>
 
 <article>
-	<h2>{title}</h2>
+	<h3>{title}</h3>
 	<meter class="sr-only" {value} {min} {max}>{value}{unit}</meter>
-	<svg aria-hidden="true" viewBox="0 0 340 340">
+	<svg class="gauge" aria-hidden="true" viewBox="0 0 340 340">
 		<circle
 			class="outline"
 			r="150"
@@ -58,43 +58,43 @@
 		border: 2px solid #d6d3d1;
 		border-radius: 8px;
 	}
-	h2 {
+	h3 {
 		margin: 0;
 		text-align: center;
 		margin-bottom: 12px;
 		font-weight: 400;
-		font-size: 1.5rem;
+		font-size: 1.25rem;
 	}
 	p {
 		margin: 0;
 		text-align: center;
-		font-size: 1.25rem;
+		font-size: 1rem;
 	}
-	svg {
+	svg.gauge {
 		color: #22c55e;
 		display: block;
 		width: 100%;
 	}
-	svg circle {
+	svg.gauge circle {
 		transform-origin: center;
 	}
-	svg circle.filled {
+	svg.gauge circle.filled {
 		transform: rotate(126deg);
 		transition-property: stroke-dasharray;
 		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 		transition-duration: 300ms;
 	}
-	svg circle.outline {
+	svg.gauge circle.outline {
 		transform: rotate(124deg);
 	}
-	svg text {
+	svg.gauge text {
 		font: inherit;
 		color: black;
 	}
-	svg text.value {
+	svg.gauge text.value {
 		font-size: 3.5rem;
 	}
-	svg text.unit {
+	svg.gauge text.unit {
 		font-size: 2rem;
 		font-weight: 300;
 	}

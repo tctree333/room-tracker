@@ -47,7 +47,6 @@
 		};
 
 		sse.addEventListener('message', (event) => {
-			console.log({ event });
 			lastUpdated = new Date().toLocaleString();
 			const data: DataEndpointPayload = JSON.parse(event.data);
 			currentState = data.value;

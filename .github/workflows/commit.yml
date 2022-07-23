@@ -3,7 +3,7 @@ name: Commit data
 on:
   workflow_dispatch:
   schedule:
-    - cron: '57 * * * *' # every hour at XX:57
+    - cron: '9/10 * * * *'
 
 jobs:
   scrape:

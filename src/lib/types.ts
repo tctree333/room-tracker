@@ -9,6 +9,10 @@ export interface RoomDataPayload {
 	NOX: number;
 }
 
+export interface HistoricalDataPayload extends RoomDataPayload {
+	timestamp: string;
+}
+
 export interface DataEndpointPayload {
 	device: string;
 	value: RoomDataPayload;

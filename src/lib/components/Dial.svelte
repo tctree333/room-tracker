@@ -45,7 +45,7 @@
 			stroke-dasharray="{800 * Math.min(Math.max((value - min) / (max - min), 0.02), 1)} 1000"
 		/>
 		<text class="value" x="50%" y="48%" text-anchor="middle" dominant-baseline="middle"
-			>{value.toFixed(2)}</text
+			>{value}</text
 		>
 		<text class="unit" x="50%" y="68%" text-anchor="middle" dominant-baseline="middle">{unit}</text>
 	</svg>

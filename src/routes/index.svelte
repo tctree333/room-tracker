@@ -7,7 +7,8 @@
 		if (!response.ok) {
 			return { status: response.status };
 		}
-		const lastData = (await response.json()).slice(-1)[0];
+		const rolling = await response.json();
+		const lastData = JSON.parse(JSON.stringify(rolling.slice(-1)[0])); // clone
 		const lastUpdated = new Date(lastData.timestamp).toLocaleString();
 		delete lastData.timestamp;
 
@@ -15,7 +16,9 @@
 			status: 200,
 			props: {
 				currentState: lastData,
-				lastUpdated
+				lastUpdated,
+				lastUpdatedRolling: lastUpdated,
+				rolling
 			}
 		};
 	};
@@ -26,11 +29,15 @@
 
 	import Dial from '$lib/components/Dial.svelte';
 	import { browser } from '$app/env';
-	import type { DataEndpointPayload, RoomDataPayload } from '$lib/types';
+	import type { DataEndpointPayload, HistoricalDataPayload, RoomDataPayload } from '$lib/types';
+	import { aqi, nowCast } from '$lib/aqi';
 
 	let messages: DataEndpointPayload[] = [];
 	export let currentState: RoomDataPayload;
 	export let lastUpdated = 'never';
+
+	export let rolling: HistoricalDataPayload[];
+	export let lastUpdatedRolling = 'never';
 
 	if (browser) {
 		const sse = new EventSource('/data');
@@ -52,13 +59,79 @@
 
 <main class="content">
 	<h1>Room Air Data</h1>
-
-	<p>Last updated at {lastUpdated}.</p>
-	<pre>{JSON.stringify(currentState, undefined, 2)}</pre>
 </main>
 <section>
 	<div class="content">
+		<h2>Computed</h2>
+		<p>Last updated at {lastUpdatedRolling}.</p>
+	</div>
+	<div class="grid">
+		<Dial
+			title={'Current AQI (PM2.5)'}
+			unit={'AQI'}
+			value={nowCast(rolling, 'PM2.5')}
+			min={0}
+			max={500}
+			ranges={{
+				Good: [0, 50, '#00e400'],
+				Moderate: [51, 100, '#ffff00'],
+				'Unhealthy for Sensitive Groups': [101, 150, '#ff7e00'],
+				Unhealthy: [151, 200, '#ff0000'],
+				'Very Unhealthy': [201, 300, '#99004c'],
+				Hazardous: [301, 500, '#7e0023']
+			}}
+		/>
+		<Dial
+			title={'Current AQI (PM10)'}
+			unit={'AQI'}
+			value={nowCast(rolling, 'PM10')}
+			min={0}
+			max={500}
+			ranges={{
+				Good: [0, 50, '#00e400'],
+				Moderate: [51, 100, '#ffff00'],
+				'Unhealthy for Sensitive Groups': [101, 150, '#ff7e00'],
+				Unhealthy: [151, 200, '#ff0000'],
+				'Very Unhealthy': [201, 300, '#99004c'],
+				Hazardous: [301, 500, '#7e0023']
+			}}
+		/>
+		<Dial
+			title={'24hr AQI (PM2.5)'}
+			unit={'AQI'}
+			value={aqi(rolling, 'PM2.5')}
+			min={0}
+			max={500}
+			ranges={{
+				Good: [0, 50, '#00e400'],
+				Moderate: [51, 100, '#ffff00'],
+				'Unhealthy for Sensitive Groups': [101, 150, '#ff7e00'],
+				Unhealthy: [151, 200, '#ff0000'],
+				'Very Unhealthy': [201, 300, '#99004c'],
+				Hazardous: [301, 500, '#7e0023']
+			}}
+		/>
+		<Dial
+			title={'24hr AQI (PM10)'}
+			unit={'AQI'}
+			value={aqi(rolling, 'PM10')}
+			min={0}
+			max={500}
+			ranges={{
+				Good: [0, 50, '#00e400'],
+				Moderate: [51, 100, '#ffff00'],
+				'Unhealthy for Sensitive Groups': [101, 150, '#ff7e00'],
+				Unhealthy: [151, 200, '#ff0000'],
+				'Very Unhealthy': [201, 300, '#99004c'],
+				Hazardous: [301, 500, '#7e0023']
+			}}
+		/>
+	</div>
+</section>
+<section>
+	<div class="content">
 		<h2>Real-Time</h2>
+		<p>Last updated at {lastUpdated}.</p>
 	</div>
 	<div class="grid">
 		<Dial
@@ -104,7 +177,7 @@
 		<Dial
 			title={'Temperature'}
 			unit={'°F'}
-			value={(currentState?.TMP1 || 0) * (9 / 5) + 32}
+			value={Math.trunc(((currentState?.TMP1 || 0) * (9 / 5) + 32) * 100) / 100}
 			min={25}
 			max={110}
 			ranges={{

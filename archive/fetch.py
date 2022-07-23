@@ -32,10 +32,11 @@ def main():
     rolling = list(
         sorted(
             filter(
-                lambda x: datetime.fromisoformat(x["timestamp"].replace("Z", "+00:00"))
-                .astimezone(timezone(-timedelta(hours=8)))
-                .date()
-                == PST_TIME.date(),
+                lambda x: (
+                    PST_TIME
+                    - datetime.fromisoformat(x["timestamp"].replace("Z", "+00:00"))
+                ).days
+                == 0,
                 rolling,
             ),
             key=lambda x: x["timestamp"],

@@ -176,7 +176,7 @@
 		<Dial
 			title={'Temperature'}
 			unit={'°F'}
-			value={Math.trunc(((currentState?.TMP1 || 0) * (9 / 5) + 32) * 100) / 100}
+			value={Math.trunc(((currentState?.TMP || 0) * (9 / 5) + 32) * 100) / 100}
 			min={25}
 			max={110}
 			ranges={{
@@ -191,7 +191,7 @@
 		<Dial
 			title={'Humidity'}
 			unit={'%'}
-			value={currentState?.HUM1 || 0}
+			value={currentState?.HUM || 0}
 			min={0}
 			max={100}
 			ranges={{
@@ -224,6 +224,19 @@
 				Mild: [20, 150, '#EAB308'],
 				Medium: [150, 300, '#F97316'],
 				High: [300, 500, '#EF4444']
+			}}
+		/>
+		<Dial
+			title={'CO2'}
+			unit={'ppm'}
+			value={currentState?.CO2 || 0}
+			min={300}
+			max={3000}
+			ranges={{
+				Normal: [0, 450, '#22C55E'],
+				Elevated: [450, 600, '#EAB308'],
+				High: [600, 1000, '#F97316'],
+				'Very High': [1000, 3000, '#EF4444']
 			}}
 		/>
 	</div>

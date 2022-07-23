@@ -20,7 +20,7 @@
 
 <article>
 	<h3>{title}</h3>
-	<meter class="sr-only" {value} {min} {max}>{value}{unit}</meter>
+	<meter class="sr-only" {value} {min} {max}>{value} {unit}</meter>
 	<svg class="gauge" aria-hidden="true" viewBox="0 0 340 340">
 		<circle
 			class="outline"

@@ -30,10 +30,15 @@ function averageByHour(data: PmData[]) {
 }
 
 function extractData(data: HistoricalDataPayload[], key: keyof RoomDataPayload): PmData[] {
-	return data.map((value) => ({
-		time: new Date(value.timestamp),
-		value: value[key]
-	}));
+	return data.flatMap((value) => {
+		if (!value[key]) return [];
+		return [
+			{
+				time: new Date(value.timestamp),
+				value: value[key] as number
+			}
+		];
+	});
 }
 
 function aqiFromConcentration(concentration: number, particle: ParticleSize): number {

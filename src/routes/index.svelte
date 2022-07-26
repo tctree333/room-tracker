@@ -56,6 +56,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Room Tracker</title>
+</svelte:head>
+
 <main>
 	<div class="content">
 		<h1>Room Air Data</h1>

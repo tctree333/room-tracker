@@ -4,7 +4,7 @@ const authToken = Deno.env.get('PARTICLE_TOKEN');
 const product = Deno.env.get('PARTICLE_PRODUCT');
 const deviceNameMap = new Map<string, string>();
 
-async function readEvent(url: string, callback: (data: any) => void) {
+async function readEvent(url: string, callback: (data: Record<string, string>) => void) {
 	const utf8Decoder = new TextDecoder('utf-8');
 
 	const resp = await fetch(url);
@@ -33,7 +33,7 @@ export default async function () {
 			fetch(`${BASE_URL}/v1/products/${product}/devices?access_token=${authToken}`)
 				.then((res) => res.json())
 				.then((data) => {
-					data.devices.forEach((device) => {
+					data.devices.forEach((device: { id: string; name: string }) => {
 						deviceNameMap.set(device.id, device.name);
 					});
 

@@ -1,5 +1,3 @@
-import type { RequestHandler } from '@sveltejs/kit';
-
 const BASE_URL = 'https://api.particle.io';
 
 const authToken = process.env.PARTICLE_TOKEN;
@@ -29,7 +27,7 @@ async function readEvent(url: string, callback: (data: any) => void) {
 	}
 }
 
-export const GET: RequestHandler = async () => {
+export default async function () {
 	const body = new ReadableStream({
 		start(controller) {
 			fetch(`${BASE_URL}/v1/products/${product}/devices?access_token=${authToken}`)
@@ -56,10 +54,9 @@ export const GET: RequestHandler = async () => {
 			return;
 		}
 	});
-	return {
+	return new Response(body, {
 		headers: {
 			'Content-Type': 'text/event-stream'
-		},
-		body
-	};
-};
+		}
+	});
+}

@@ -3,5 +3,5 @@
   publish = "build"
 
 [[edge_functions]]
-  path = "/*"
-  function = "render"
+  path = "/data"
+  function = "particle"

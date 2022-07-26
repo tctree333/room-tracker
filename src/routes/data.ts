@@ -1,31 +1,56 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import Particle from 'particle-api-js';
 
-const particle = new Particle();
+const BASE_URL = 'https://api.particle.io';
 
 const authToken = process.env.PARTICLE_TOKEN;
 const product = process.env.PARTICLE_PRODUCT;
 const deviceNameMap = new Map<string, string>();
 
+async function readEvent(url: string, callback: (data: any) => void) {
+	const utf8Decoder = new TextDecoder('utf-8');
+
+	const resp = await fetch(url);
+	if (!resp.body) return;
+	const reader = resp.body.getReader();
+	let finished = false;
+	while (!finished) {
+		const { value, done } = await reader.read();
+		if (done) {
+			finished = true;
+			break;
+		}
+		const decoded = utf8Decoder.decode(value).trim();
+		decoded.split('\n').forEach((line) => {
+			if (line.startsWith('data:')) {
+				const data = JSON.parse(line.substring(5));
+				callback(data);
+			}
+		});
+	}
+}
+
 export const GET: RequestHandler = async () => {
 	const body = new ReadableStream({
 		start(controller) {
-			particle.listDevices({ auth: authToken, product }).then((data) => {
-				data.body.devices.forEach((device) => {
-					deviceNameMap.set(device.id, device.name);
-				});
-
-				particle.getEventStream({ name: 'roomData', auth: authToken, product }).then((stream) => {
-					stream.on('event', (data) => {
-						const device = deviceNameMap.get(data.coreid) || data.coreid;
-						const payload = JSON.parse(data.data);
-						const msg = new TextEncoder().encode(
-							`data: ${JSON.stringify({ device, value: payload })}\n\n`
-						);
-						controller.enqueue(msg);
+			fetch(`${BASE_URL}/v1/products/${product}/devices?access_token=${authToken}`)
+				.then((res) => res.json())
+				.then((data) => {
+					data.devices.forEach((device) => {
+						deviceNameMap.set(device.id, device.name);
 					});
+
+					readEvent(
+						`${BASE_URL}/v1/products/${product}/events/roomData?access_token=${authToken}`,
+						(data) => {
+							const device = deviceNameMap.get(data.coreid) || data.coreid;
+							const payload = JSON.parse(data.data);
+							const msg = new TextEncoder().encode(
+								`data: ${JSON.stringify({ device, value: payload })}\n\n`
+							);
+							controller.enqueue(msg);
+						}
+					).then();
 				});
-			});
 		},
 		cancel() {
 			return;

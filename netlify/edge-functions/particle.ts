@@ -1,7 +1,7 @@
 const BASE_URL = 'https://api.particle.io';
 
-const authToken = process.env.PARTICLE_TOKEN;
-const product = process.env.PARTICLE_PRODUCT;
+const authToken = Deno.env.get('PARTICLE_TOKEN');
+const product = Deno.env.get('PARTICLE_PRODUCT');
 const deviceNameMap = new Map<string, string>();
 
 async function readEvent(url: string, callback: (data: any) => void) {

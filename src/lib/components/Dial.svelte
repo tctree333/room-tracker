@@ -96,6 +96,5 @@
 	}
 	svg.gauge text.unit {
 		font-size: 2rem;
-		font-weight: 300;
 	}
 </style>

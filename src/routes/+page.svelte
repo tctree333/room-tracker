@@ -1,43 +1,18 @@
-<script context="module" lang="ts">
-	import type { Load } from '@sveltejs/kit';
-	export const load: Load = async ({ fetch }) => {
-		const url =
-			'https://raw.githubusercontent.com/tctree333/room-tracker/main/archive/data/rolling.json';
-		const response = await fetch(url);
-		if (!response.ok) {
-			return { status: response.status };
-		}
-		const rolling = await response.json();
-		const lastData = JSON.parse(JSON.stringify(rolling.slice(-1)[0])); // clone
-		const lastUpdated = new Date(lastData.timestamp).toLocaleString();
-		delete lastData.timestamp;
-
-		return {
-			status: 200,
-			props: {
-				currentState: lastData,
-				lastUpdated,
-				lastUpdatedRolling: lastUpdated,
-				rolling
-			}
-		};
-	};
-</script>
-
 <script lang="ts">
 	import '$lib/global.css';
 
 	import Dial from '$lib/components/Dial.svelte';
-	import { browser } from '$app/env';
-	import type { DataEndpointPayload, HistoricalDataPayload, RoomDataPayload } from '$lib/types';
+	import type { DataEndpointPayload } from '$lib/types';
 	import { aqi, nowCast } from '$lib/aqi';
 
-	let messages: DataEndpointPayload[] = [];
-	export let currentState: RoomDataPayload;
-	export let lastUpdated = 'never';
+	import { browser } from '$app/environment';
+	import type { PageData } from './$types';
 
-	export let rolling: HistoricalDataPayload[];
-	export let lastUpdatedRolling = 'never';
+	export let data: PageData;
+
+	let { currentState, lastUpdated, rolling, lastUpdatedRolling } = data;
+
+	let messages: DataEndpointPayload[] = [];
 
 	if (browser) {
 		const sse = new EventSource('/data');

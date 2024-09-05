@@ -22,7 +22,7 @@
 		};
 
 		sse.addEventListener('message', (event) => {
-			lastUpdated = new Date().toLocaleString();
+			lastUpdated = new Date();
 			const data: DataEndpointPayload = JSON.parse(event.data);
 			currentState = data.value;
 			messages.unshift(data);
@@ -46,7 +46,7 @@
 	<section>
 		<div class="content">
 			<h2>Current Measurements</h2>
-			<p>Last updated at {lastUpdated}.</p>
+			<p>Last updated at {lastUpdated.toLocaleString()}.</p>
 		</div>
 		<div class="grid">
 			<Dial
@@ -120,7 +120,7 @@
 	<section>
 		<div class="content">
 			<h2>Computed AQI</h2>
-			<p>Last updated at {lastUpdatedRolling}.</p>
+			<p>Last updated at {lastUpdatedRolling.toLocaleString()}.</p>
 		</div>
 		<div class="grid">
 			<Dial
@@ -188,7 +188,7 @@
 	<section>
 		<div class="content">
 			<h2>Current Particulate Matter</h2>
-			<p>Last updated at {lastUpdated}.</p>
+			<p>Last updated at {lastUpdated.toLocaleString()}.</p>
 		</div>
 		<div class="grid">
 			<Dial

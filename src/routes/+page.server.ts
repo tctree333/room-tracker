@@ -18,13 +18,13 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	if (currentDataResp.ok) {
 		lastData = (await currentDataResp.json()).slice(-1)[0];
 	}
-	const lastUpdated = new Date(lastData.timestamp).toLocaleString();
+	const lastUpdated = new Date(lastData.timestamp);
 	delete lastData.timestamp;
 
 	return {
 		currentState: lastData as RoomDataPayload,
 		lastUpdated,
-		lastUpdatedRolling: lastUpdated,
+		lastUpdatedRolling: new Date(rolling.slice(-1)[0].timestamp),
 		rolling: rolling as HistoricalDataPayload[]
 	};
 };

@@ -4,12 +4,20 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ fetch }) => {
-	const response = await fetch(SPREADSHEET_ENDPOINT);
-	if (!response.ok) {
-		error(response.status, 'Failed to fetch data');
+	const rollingResp = await fetch(
+		'https://raw.githubusercontent.com/tctree333/room-tracker/main/archive/data/rolling.json'
+	);
+	if (!rollingResp.ok) {
+		error(rollingResp.status, 'Failed to fetch data');
 	}
-	const rolling = await response.json();
-	const lastData = JSON.parse(JSON.stringify(rolling.slice(-1)[0])); // clone
+	const rolling = await rollingResp.json();
+
+	let lastData = JSON.parse(JSON.stringify(rolling.slice(-1)[0])); // clone
+
+	const currentDataResp = await fetch(SPREADSHEET_ENDPOINT);
+	if (currentDataResp.ok) {
+		lastData = (await currentDataResp.json()).slice(-1)[0];
+	}
 	const lastUpdated = new Date(lastData.timestamp).toLocaleString();
 	delete lastData.timestamp;
 

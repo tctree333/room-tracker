@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            archive/data/day
 
       - name: Install dependencies
         run: pip install -r archive/requirements.txt
